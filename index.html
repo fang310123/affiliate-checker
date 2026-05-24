@@ -3,209 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>短網址分潤檢測工具</title>
+    <title>短網址/長網址 分潤檢測工具</title>
     <style>
-        body {
-            font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-            max-width: 700px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #f5f7fb;
-        }
-        .card {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            padding: 30px;
-        }
-        h1 {
-            font-size: 1.8rem;
-            margin-top: 0;
-            color: #1e293b;
-        }
-        .note {
-            background: #fef9e3;
-            border-left: 5px solid #f59e0b;
-            padding: 12px 16px;
-            font-size: 0.85rem;
-            margin-bottom: 24px;
-            border-radius: 12px;
-        }
-        label {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 8px;
-        }
-        input {
-            width: 100%;
-            padding: 14px;
-            font-size: 1rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 16px;
-            box-sizing: border-box;
-            font-family: monospace;
-        }
-        button {
-            margin-top: 18px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 1rem;
-            border-radius: 40px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-        }
-        button:hover {
-            background: #2563eb;
-        }
-        .result {
-            margin-top: 28px;
-            padding: 16px;
-            border-radius: 20px;
-            background: #f1f5f9;
-            word-break: break-all;
-        }
-        .badge {
-            display: inline-block;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-        .affiliate {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-        .safe {
-            background: #dcfce7;
-            color: #15803d;
-        }
-        .error {
-            background: #ffedd5;
-            color: #9a3412;
-        }
-        hr {
-            margin: 16px 0;
-        }
-        footer {
-            margin-top: 20px;
-            font-size: 0.75rem;
-            text-align: center;
-            color: #475569;
-        }
+        /* ... (樣式與之前相同，保持版面整潔) ... */
+        body { font-family: system-ui, 'Segoe UI', Roboto, sans-serif; max-width: 700px; margin: 50px auto; padding: 20px; background: #f5f7fb; }
+        .card { background: white; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 30px; }
+        h1 { font-size: 1.8rem; margin-top: 0; color: #1e293b; }
+        .note { background: #fef9e3; border-left: 5px solid #f59e0b; padding: 12px 16px; font-size: 0.85rem; margin-bottom: 24px; border-radius: 12px; }
+        label { font-weight: 600; display: block; margin-bottom: 8px; }
+        input { width: 100%; padding: 14px; font-size: 1rem; border: 1px solid #cbd5e1; border-radius: 16px; box-sizing: border-box; font-family: monospace; }
+        button { margin-top: 18px; background: #3b82f6; color: white; border: none; padding: 12px 24px; font-size: 1rem; border-radius: 40px; cursor: pointer; font-weight: bold; width: 100%; }
+        button:hover { background: #2563eb; }
+        .result { margin-top: 28px; padding: 16px; border-radius: 20px; background: #f1f5f9; word-break: break-all; }
+        .badge { display: inline-block; padding: 6px 14px; border-radius: 40px; font-size: 0.8rem; font-weight: bold; margin-bottom: 12px; }
+        .affiliate { background: #fee2e2; color: #b91c1c; }
+        .safe { background: #dcfce7; color: #15803d; }
+        .error { background: #ffedd5; color: #9a3412; }
+        hr { margin: 16px 0; }
+        footer { margin-top: 20px; font-size: 0.75rem; text-align: center; color: #475569; }
     </style>
 </head>
 <body>
 <div class="card">
-    <h1>🔗 短網址分潤檢測</h1>
+    <h1>🔗 分潤鏈結檢測助手</h1>
     <div class="note">
-        ⚠️ 注意：此工具會解析短網址的最終跳轉目標，並檢查是否有分潤參數。<br>
-        若偵測失敗，請手動點擊短網址，再觀察最終網址列中的參數。
+        💡 <strong>使用說明</strong><br>
+        1. 貼上「<strong>完整的商品頁網址</strong>」 (例如 www.tw.coupang.com/...) 或「<strong>短網址</strong>」 (例如 coupa.ng/...)。<br>
+        2. 若偵測短網址失敗，請直接將瀏覽器最終到達的「<strong>完整商品頁網址</strong>」貼入檢測，結果最準確。
     </div>
 
-    <label>📎 貼上短網址</label>
-    <input type="text" id="shortUrl" placeholder="例如: https://coupa.ng/xxxxxx" value="https://coupa.ng/cm3Z43?abTestInfo=100412_group_A">
-    <button id="checkBtn">🔍 解析並判斷分潤</button>
+    <label>📎 貼上網址進行檢測</label>
+    <input type="text" id="urlInput" placeholder="貼上 coupa.ng 短網址 或 www.tw.coupang.com 商品網址">
+    <button id="checkBtn">🔍 檢測分潤</button>
 
     <div id="resultArea" class="result" style="display: none;"></div>
-    <footer>💡 分潤特徵關鍵字：affiliate, ref, partner, click_id, utm_source, af_sub5, settlement 等</footer>
+    <footer>🔎 支援偵測參數：<code>af_sub5</code>, <code>settlement</code>, <code>ref</code>, <code>affiliate</code>, <code>partner</code> 等。</footer>
 </div>
 
 <script>
-    // 分潤關鍵字（更新版：加入 Coupang 常見分潤參數）
-    const AFFILIATE_KEYWORDS = [
-        // 通用分潤
-        'affiliate', 'aff_id', 'affid', 'affiliate_id', 'af_',
-        'ref', 'referral', 'referrer',
-        'partner', 'partner_id', 'pub_id',
-        'click_id', 'clickid',
-        'utm_source', 'utm_medium',
-        'tag', 'sr', 'afp', 'afftrack', 'sid', 'subid',
-        // Coupang 特定
-        'af_sub5',      // 重要！CSHARESDP 會出現在這裡
-        'settlement',   // settlement=N 表示無分潤
-        'cshare', 'share', 'social'
+    // 增強版分潤關鍵字庫
+    const AFFILIATE_PATTERNS = [
+        // 參數名稱
+        { type: 'param', keywords: ['affiliate', 'aff_id', 'af_', 'ref', 'referral', 'partner', 'click_id', 'utm_source', 'sid', 'subid'] },
+        // Coupang 特殊規則
+        { type: 'coupang_af_sub5', param: 'af_sub5', affValues: ['share', 'ref', 'social'] },
+        { type: 'coupang_settlement', param: 'settlement', nonAffValue: 'n' }
     ];
 
-    // 特殊分潤值檢測（例如 af_sub5=CSHARESDP）
-    function hasAffiliateValue(params) {
-        for (let [key, value] of params.entries()) {
-            const lowerKey = key.toLowerCase();
-            const lowerValue = value.toLowerCase();
-            
-            // 檢查 af_sub5 是否包含 SHARE 或 REF 等關鍵字
-            if (lowerKey === 'af_sub5') {
-                if (lowerValue.includes('share') || lowerValue.includes('ref') || lowerValue.includes('social')) {
-                    return { key, value, reason: 'af_sub5 參數包含分潤關鍵字' };
-                }
-            }
-            
-            // 檢查 settlement=N（無分潤標記，反向邏輯）
-            if (lowerKey === 'settlement' && lowerValue === 'n') {
-                return { key, value, reason: 'settlement=N 可能表示不結算分潤', isNonAffiliate: true };
-            }
-            
-            // 檢查 utm_source 是否為分潤來源
-            if (lowerKey === 'utm_source') {
-                if (lowerValue.includes('aff') || lowerValue.includes('partner') || lowerValue.includes('ref')) {
-                    return { key, value, reason: 'utm_source 為分潤來源' };
-                }
-            }
-        }
-        return null;
-    }
-
-    function parseFinalUrl(finalUrl) {
+    function analyzeUrl(targetUrl) {
         try {
-            const urlObj = new URL(finalUrl);
-            const params = urlObj.searchParams;
-            const foundParams = [];
+            const url = new URL(targetUrl);
+            const params = url.searchParams;
+            const found = [];
             let isAffiliate = false;
-            let nonAffiliateFlag = false;
 
-            // 一般關鍵字檢查
+            // 1. 檢查參數名稱
             for (let [key, value] of params.entries()) {
                 const lowerKey = key.toLowerCase();
-                if (AFFILIATE_KEYWORDS.some(kw => lowerKey.includes(kw))) {
-                    foundParams.push({ key, value, reason: '參數名稱包含分潤關鍵字' });
+                if (AFFILIATE_PATTERNS.some(p => p.type === 'param' && p.keywords.some(kw => lowerKey.includes(kw)))) {
+                    found.push({ key, value, reason: `參數名稱 "${key}" 為常見分潤標記` });
                     isAffiliate = true;
                 }
             }
-            
-            // 特殊值檢查（例如 af_sub5=CSHARESDP）
-            const specialCheck = hasAffiliateValue(params);
-            if (specialCheck) {
-                if (specialCheck.isNonAffiliate) {
-                    nonAffiliateFlag = true;
-                    foundParams.push({ key: specialCheck.key, value: specialCheck.value, reason: specialCheck.reason });
+
+            // 2. 檢查 Coupang 的 af_sub5
+            const afSub5 = params.get('af_sub5');
+            if (afSub5) {
+                const lowerVal = afSub5.toLowerCase();
+                if (lowerVal.includes('share') || lowerVal.includes('ref')) {
+                    found.push({ key: 'af_sub5', value: afSub5, reason: `🔥 Coupang 分潤關鍵參數值為 "${afSub5}"` });
+                    isAffiliate = true;
                 } else {
-                    isAffiliate = true;
-                    foundParams.push({ key: specialCheck.key, value: specialCheck.value, reason: specialCheck.reason });
+                    found.push({ key: 'af_sub5', value: afSub5, reason: `參數值為 "${afSub5}"，無明顯分潤特徵` });
                 }
             }
-            
-            // 如果有 settlement=N 且沒有其他分潤證據，判定為無分潤
-            if (nonAffiliateFlag && !isAffiliate) {
-                isAffiliate = false;
+
+            // 3. 檢查 Coupang 的 settlement
+            const settlement = params.get('settlement');
+            if (settlement && settlement.toLowerCase() === 'n') {
+                found.push({ key: 'settlement', value: settlement, reason: `參數值為 "N"，可能表示「不結算分潤」` });
+                // 注意：這裡不將 isAffiliate 設為 true
             }
+
+            // 4. 特殊最終判斷：如果有 settlement=N 但沒有其他分潤證據，則判定為無分潤
+            const hasSettlementN = settlement && settlement.toLowerCase() === 'n';
+            const hasOtherAffiliateEvidence = isAffiliate;
             
-            return { foundParams, isAffiliate, fullUrl: finalUrl };
-        } catch(e) {
-            return { foundParams: [], isAffiliate: false, fullUrl: finalUrl };
+            let finalVerdict = isAffiliate;
+            if (hasSettlementN && !hasOtherAffiliateEvidence) {
+                finalVerdict = false; // 只有 settlement=N 沒有其他證據，判定安全
+            }
+
+            return { isAffiliate: finalVerdict, foundParams: found, fullUrl: targetUrl };
+        } catch (e) {
+            return { isAffiliate: false, foundParams: [], fullUrl: targetUrl, error: 'URL 解析失敗' };
         }
     }
 
-    async function getFinalUrl(shortUrl) {
+    async function resolveShortUrl(shortUrl) {
         const apiUrl = `https://unshorten.me/json/${encodeURIComponent(shortUrl)}`;
         const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('無法連線解析服務');
         const data = await response.json();
         if (data && data.resolved_url) {
             return data.resolved_url;
         } else {
-            throw new Error('無法解析短網址');
+            throw new Error('無法解析此短網址，請手動複製最終網址');
         }
     }
 
@@ -219,9 +122,9 @@
     }
 
     async function handleCheck() {
-        const input = document.getElementById('shortUrl').value.trim();
+        const input = document.getElementById('urlInput').value.trim();
         if (!input) {
-            alert('請輸入短網址');
+            alert('請輸入或貼上網址');
             return;
         }
 
@@ -232,18 +135,23 @@
 
         const resultDiv = document.getElementById('resultArea');
         resultDiv.style.display = 'block';
-        resultDiv.innerHTML = `<div>⏳ 解析中，請稍候...</div>`;
+        resultDiv.innerHTML = `<div>⏳ 檢測中...</div>`;
 
         try {
-            const finalUrl = await getFinalUrl(urlToCheck);
-            const analysis = parseFinalUrl(finalUrl);
+            let finalUrl = urlToCheck;
+            // 如果是短網址，嘗試解析
+            if (urlToCheck.includes('coupa.ng') || urlToCheck.includes('bit.ly') || urlToCheck.includes('tinyurl')) {
+                resultDiv.innerHTML = `<div>⏳ 偵測到短網址，嘗試解析真實目標...</div>`;
+                finalUrl = await resolveShortUrl(urlToCheck);
+            }
             
+            const analysis = analyzeUrl(finalUrl);
             const badgeClass = analysis.isAffiliate ? 'affiliate' : 'safe';
             const badgeText = analysis.isAffiliate ? '⚠️ 偵測到分潤跡象' : '✅ 無明顯分潤特徵';
 
             let paramsHtml = '';
             if (analysis.foundParams.length > 0) {
-                paramsHtml = `<div style="margin-top: 12px;"><strong>🔎 可疑參數：</strong><ul style="margin-top: 8px;">` +
+                paramsHtml = `<div style="margin-top: 12px;"><strong>🔎 參數分析：</strong><ul style="margin-top: 8px;">` +
                     analysis.foundParams.map(p => `<li><code>${p.key}=${p.value}</code><br> <span style="font-size:0.75rem;">➜ ${p.reason}</span></li>`).join('') +
                     `</ul></div>`;
             } else {
@@ -252,14 +160,19 @@
 
             resultDiv.innerHTML = `
                 <div class="badge ${badgeClass}">${badgeText}</div>
-                <div><strong>🔗 最終網址：</strong><br><span style="font-size:0.8rem;">${escapeHtml(analysis.fullUrl)}</span></div>
+                <div><strong>🔗 檢測網址：</strong><br><span style="font-size:0.8rem;">${escapeHtml(analysis.fullUrl)}</span></div>
                 <hr>
                 ${paramsHtml}
+                <div style="margin-top:12px; font-size:0.8rem; color:#475569;">
+                📌 <strong>如何手動確認？</strong><br>
+                若對自動結果有疑慮，可直接複製瀏覽器網址列的「<strong>完整商品頁網址</strong>」再次檢測。
+                </div>
             `;
         } catch(err) {
-            resultDiv.innerHTML = `<div class="badge error">❌ 偵測失敗</div>
+            resultDiv.innerHTML = `<div class="badge error">❌ 檢測失敗</div>
                                    <div>${escapeHtml(err.message)}</div>
-                                   <div style="margin-top:12px;">👉 請手動點擊短網址，查看最終網址列中的參數。</div>`;
+                                   <div style="margin-top:12px;">👉 <strong>替代方案：</strong>請手動點擊短網址，待商品頁面載入後，<br>
+                                   複製瀏覽器上方的「<strong>完整商品頁網址</strong>」，再貼回此工具檢測。</div>`;
         }
     }
 
