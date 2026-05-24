@@ -113,19 +113,54 @@
 
 
     <div id="resultArea" class="result" style="display: none;"></div>
-    <footer>💡 分潤特徵關鍵字：affiliate, ref, partner, click_id, utm_source=aff, sid, subid 等</footer>
+    <footer>💡 分潤特徵關鍵字：affiliate, ref, partner, click_id, utm_source, af_sub5, settlement 等</footer>
 </div>
 
 
 <script>
+    // 分潤關鍵字（更新版：加入 Coupang 常見分潤參數）
     const AFFILIATE_KEYWORDS = [
-        'affiliate', 'aff_id', 'affid', 'affiliate_id',
+        // 通用分潤
+        'affiliate', 'aff_id', 'affid', 'affiliate_id', 'af_',
         'ref', 'referral', 'referrer',
         'partner', 'partner_id', 'pub_id',
         'click_id', 'clickid',
         'utm_source', 'utm_medium',
-        'tag', 'sr', 'afp', 'afftrack', 'sid', 'subid'
+        'tag', 'sr', 'afp', 'afftrack', 'sid', 'subid',
+        // Coupang 特定
+        'af_sub5',      // 重要！CSHARESDP 會出現在這裡
+        'settlement',   // settlement=N 表示無分潤
+        'cshare', 'share', 'social'
     ];
+
+
+    // 特殊分潤值檢測（例如 af_sub5=CSHARESDP）
+    function hasAffiliateValue(params) {
+        for (let [key, value] of params.entries()) {
+            const lowerKey = key.toLowerCase();
+            const lowerValue = value.toLowerCase();
+            
+            // 檢查 af_sub5 是否包含 SHARE 或 REF 等關鍵字
+            if (lowerKey === 'af_sub5') {
+                if (lowerValue.includes('share') || lowerValue.includes('ref') || lowerValue.includes('social')) {
+                    return { key, value, reason: 'af_sub5 參數包含分潤關鍵字' };
+                }
+            }
+            
+            // 檢查 settlement=N（無分潤標記，反向邏輯）
+            if (lowerKey === 'settlement' && lowerValue === 'n') {
+                return { key, value, reason: 'settlement=N 可能表示不結算分潤', isNonAffiliate: true };
+            }
+            
+            // 檢查 utm_source 是否為分潤來源
+            if (lowerKey === 'utm_source') {
+                if (lowerValue.includes('aff') || lowerValue.includes('partner') || lowerValue.includes('ref')) {
+                    return { key, value, reason: 'utm_source 為分潤來源' };
+                }
+            }
+        }
+        return null;
+    }
 
 
     function parseFinalUrl(finalUrl) {
@@ -133,20 +168,39 @@
             const urlObj = new URL(finalUrl);
             const params = urlObj.searchParams;
             const foundParams = [];
+            let isAffiliate = false;
+            let nonAffiliateFlag = false;
 
 
+            // 一般關鍵字檢查
             for (let [key, value] of params.entries()) {
                 const lowerKey = key.toLowerCase();
                 if (AFFILIATE_KEYWORDS.some(kw => lowerKey.includes(kw))) {
-                    foundParams.push({ key, value });
-                }
-                if (lowerKey === 'utm_source' && (value.toLowerCase().includes('aff') || value.toLowerCase().includes('partner'))) {
-                    foundParams.push({ key, value });
+                    foundParams.push({ key, value, reason: '參數名稱包含分潤關鍵字' });
+                    isAffiliate = true;
                 }
             }
-            return { foundParams, fullUrl: finalUrl };
+            
+            // 特殊值檢查（例如 af_sub5=CSHARESDP）
+            const specialCheck = hasAffiliateValue(params);
+            if (specialCheck) {
+                if (specialCheck.isNonAffiliate) {
+                    nonAffiliateFlag = true;
+                    foundParams.push({ key: specialCheck.key, value: specialCheck.value, reason: specialCheck.reason });
+                } else {
+                    isAffiliate = true;
+                    foundParams.push({ key: specialCheck.key, value: specialCheck.value, reason: specialCheck.reason });
+                }
+            }
+            
+            // 如果有 settlement=N 且沒有其他分潤證據，判定為無分潤
+            if (nonAffiliateFlag && !isAffiliate) {
+                isAffiliate = false;
+            }
+            
+            return { foundParams, isAffiliate, fullUrl: finalUrl };
         } catch(e) {
-            return { foundParams: [], fullUrl: finalUrl };
+            return { foundParams: [], isAffiliate: false, fullUrl: finalUrl };
         }
     }
 
@@ -196,15 +250,14 @@
             const finalUrl = await getFinalUrl(urlToCheck);
             const analysis = parseFinalUrl(finalUrl);
             
-            const isAffiliate = analysis.foundParams.length > 0;
-            const badgeClass = isAffiliate ? 'affiliate' : 'safe';
-            const badgeText = isAffiliate ? '⚠️ 偵測到分潤跡象' : '✅ 無明顯分潤特徵';
+            const badgeClass = analysis.isAffiliate ? 'affiliate' : 'safe';
+            const badgeText = analysis.isAffiliate ? '⚠️ 偵測到分潤跡象' : '✅ 無明顯分潤特徵';
 
 
             let paramsHtml = '';
             if (analysis.foundParams.length > 0) {
                 paramsHtml = `<div style="margin-top: 12px;"><strong>🔎 可疑參數：</strong><ul style="margin-top: 8px;">` +
-                    analysis.foundParams.map(p => `<li><code>${p.key}=${p.value}</code></li>`).join('') +
+                    analysis.foundParams.map(p => `<li><code>${p.key}=${p.value}</code><br> <span style="font-size:0.75rem;">➜ ${p.reason}</span></li>`).join('') +
                     `</ul></div>`;
             } else {
                 paramsHtml = `<div style="margin-top: 12px;">✔️ 未發現典型分潤參數</div>`;
