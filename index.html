@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -106,16 +106,13 @@
         若偵測失敗，請手動點擊短網址，再觀察最終網址列中的參數。
     </div>
 
-
     <label>📎 貼上短網址</label>
     <input type="text" id="shortUrl" placeholder="例如: https://coupa.ng/xxxxxx" value="https://coupa.ng/cm3Z43?abTestInfo=100412_group_A">
     <button id="checkBtn">🔍 解析並判斷分潤</button>
 
-
     <div id="resultArea" class="result" style="display: none;"></div>
     <footer>💡 分潤特徵關鍵字：affiliate, ref, partner, click_id, utm_source, af_sub5, settlement 等</footer>
 </div>
-
 
 <script>
     // 分潤關鍵字（更新版：加入 Coupang 常見分潤參數）
@@ -132,7 +129,6 @@
         'settlement',   // settlement=N 表示無分潤
         'cshare', 'share', 'social'
     ];
-
 
     // 特殊分潤值檢測（例如 af_sub5=CSHARESDP）
     function hasAffiliateValue(params) {
@@ -162,7 +158,6 @@
         return null;
     }
 
-
     function parseFinalUrl(finalUrl) {
         try {
             const urlObj = new URL(finalUrl);
@@ -170,7 +165,6 @@
             const foundParams = [];
             let isAffiliate = false;
             let nonAffiliateFlag = false;
-
 
             // 一般關鍵字檢查
             for (let [key, value] of params.entries()) {
@@ -204,7 +198,6 @@
         }
     }
 
-
     async function getFinalUrl(shortUrl) {
         const apiUrl = `https://unshorten.me/json/${encodeURIComponent(shortUrl)}`;
         const response = await fetch(apiUrl);
@@ -216,7 +209,6 @@
         }
     }
 
-
     function escapeHtml(str) {
         return str.replace(/[&<>]/g, function(m) {
             if (m === '&') return '&amp;';
@@ -226,7 +218,6 @@
         });
     }
 
-
     async function handleCheck() {
         const input = document.getElementById('shortUrl').value.trim();
         if (!input) {
@@ -234,17 +225,14 @@
             return;
         }
 
-
         let urlToCheck = input;
         if (!urlToCheck.startsWith('http://') && !urlToCheck.startsWith('https://')) {
             urlToCheck = 'https://' + urlToCheck;
         }
 
-
         const resultDiv = document.getElementById('resultArea');
         resultDiv.style.display = 'block';
         resultDiv.innerHTML = `<div>⏳ 解析中，請稍候...</div>`;
-
 
         try {
             const finalUrl = await getFinalUrl(urlToCheck);
@@ -252,7 +240,6 @@
             
             const badgeClass = analysis.isAffiliate ? 'affiliate' : 'safe';
             const badgeText = analysis.isAffiliate ? '⚠️ 偵測到分潤跡象' : '✅ 無明顯分潤特徵';
-
 
             let paramsHtml = '';
             if (analysis.foundParams.length > 0) {
@@ -262,7 +249,6 @@
             } else {
                 paramsHtml = `<div style="margin-top: 12px;">✔️ 未發現典型分潤參數</div>`;
             }
-
 
             resultDiv.innerHTML = `
                 <div class="badge ${badgeClass}">${badgeText}</div>
@@ -276,7 +262,6 @@
                                    <div style="margin-top:12px;">👉 請手動點擊短網址，查看最終網址列中的參數。</div>`;
         }
     }
-
 
     document.getElementById('checkBtn').addEventListener('click', handleCheck);
 </script>
